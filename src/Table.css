@@ -1,0 +1,18 @@
+table{
+    border-collapse: collapse;
+    border: 0.1rem solid black;
+    margin: 1rem;
+}
+thead{
+    background-color: green;
+    color: white;
+}
+tr{
+    border: 0.1rem solid black;
+}
+tr:nth-child(even){
+    background-color: lightgray;
+}
+th, td{
+    padding: 0.5rem;
+}

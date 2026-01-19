@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+main{
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+form{
+  background-color: lightgray;
+  border-radius: 1rem;
+
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+
+form > *{
+  margin: 1rem;
+}
+
+button{
+    background-color: green;
+    color: white;
+    border-radius: 1rem;
+}
