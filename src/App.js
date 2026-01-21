@@ -6,11 +6,11 @@ import Table from './Table';
 
 function App() {
   const [grants, setGrants] = useState([]);
-  const [filteredGrants, setFilteredGrants] = useState([]);
-  const [sortedGrants, setSortedGrants] = useState([]);
+  const [queriedGrants, setQueriedGrants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("");
   const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("ASC");
 
 
   const attributes = [
@@ -24,7 +24,7 @@ function App() {
     "EndGrant"
   ];
 
-  let sortableAttributes = [];
+  let sortableAttributes = attributes;
 
   useEffect(() => {
     async function fetchGrants() {
@@ -33,51 +33,45 @@ function App() {
         if(response.ok){          
           const result = await response.json();
           setGrants(result.Grants.Grant);
-          setFilteredGrants(result.Grants.Grant);
-          setSortedGrants(result.Grants.Grant);
-          getSortableAttributes(result.Grants.Grant);
+          setQueriedGrants(result.Grants.Grant);
+          // getSortableAttributes(result.Grants.Grant);
         }
     };
     fetchGrants();
   }, []);
 
-  
-  function getSortableAttributes(grants){
-    sortableAttributes = attributes
-    return
+  function handleQuery(event){
+    event.preventDefault()
+    let result = [...grants]
 
-    for (const attr of attributes) {
-      console.log(`${attr} : ${grants[0][attr]} : ${typeof grants[0][attr]}`);
-      
-      if(typeof grants[0][attr] === "string"){
-        sortableAttributes.push(attr)
+    const hasFilter = !(searchField === "")
+    if(hasFilter){
+      result = result.filter((grant) => grant[searchField].toLowerCase().includes(searchTerm.toLowerCase()) )
+    }
+
+    function sortFunc(grant1, grant2) {
+      const value1 = grant1[sortField]
+      const value2 = grant2[sortField]
+      if(typeof value1 === "string"){
+        return (sortOrder === "ASC") ? value1.localeCompare(value2) : value2.localeCompare(value1)
+      }else{
+        return (sortOrder === "ASC") ? value1 - value2 : value2 - value1
       }
     }
-    console.log(sortableAttributes);
-  }
 
-  function handleSearch(event){
-    event.preventDefault()
-    if(searchField === ""){
-      return;
+    const hasSort = !(sortField === "")
+    if(hasSort){
+      result = result.sort(sortFunc)
     }
 
-    const results = grants.filter((grant) => (
-      grant[searchField].toLowerCase().includes(searchTerm.toLowerCase())
-    ))
-
-    setFilteredGrants(results);
+    setQueriedGrants(result)
   }
 
-  function handleSort(event){
-    event.preventDefault()
-    if(sortField === ""){
-      return;
-    }
-    
-    let result = [...filteredGrants]
-    result = result.sort((a, b) => a[sortField] - b[sortField])
-    setSortedGrants(result)
+  function reset(){
+    setSearchTerm("")
+    setSearchField("")
+    setSortField("")
+    setQueriedGrants(grants)
   }
 
 
@@ -98,33 +92,39 @@ function App() {
         </a>
       </header> */}
       <header>
-        <h1>NEH 2020's Grants</h1>
+        <h1>NEH 2020 Grants</h1>
       </header>
       <main>
-            {/* <h2>Filters</h2> */}
-            <form onSubmit={handleSearch}>
-              <label for="searchTerm">Search for</label>
-              <input type='text' id='searchTerm' name='searchTerm' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} required/>
-              <label for='searchField'>in field</label>
-              <select id='searchField' name='searchField' value={searchField} onChange={(e) => setSearchField(e.target.value)} required>
-                <option value="" autoFocus>Select a field</option>
-                {attributes.map(attr => 
-                  <option value={attr}>{attr}</option>
-                )}
-              </select>
-              <button type='submit'>Search</button>
+            <form onSubmit={handleQuery}>
+              <h2>Search Tools</h2>
+              <fieldset>
+                <label for="searchTerm">Search for</label>
+                <input type='text' id='searchTerm' name='searchTerm' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <label for='searchField'>in</label>
+                <select id='searchField' name='searchField' value={searchField} onChange={(e) => setSearchField(e.target.value)} >
+                  <option value="" autoFocus>Select a field</option>
+                  {attributes.map(attr => 
+                    <option value={attr}>{attr}</option>
+                  )}
+                </select>
+              </fieldset>
+              <fieldset>
+                <label for="sortField">Sort by</label>
+                <select id="sortField" name='sortField' value={sortField} onChange={e => setSortField(e.target.value)} >
+                  <option value="" autoFocus>Select a field</option>
+                  {sortableAttributes.map(attr =>
+                    <option value={attr}>{attr}</option>
+                  )}
+                </select>
+                <select id="sortOrder" name='sortOrder' value={sortOrder} onChange={e => setSortOrder(e.target.value)}>
+                  <option value="ASC" selected>ASC</option>
+                  <option value="DESC">DESC</option>
+                </select>
+                <button onClick={reset} className='reset'>Reset</button>
+                <button type='submit' className='submit'>Submit</button>
+              </fieldset>
             </form>
-            <form onSubmit={handleSort}>
-              <label for="sortField">Sort by:</label>
-              <select id="sortField" name='sortField' value={sortField} onChange={e => setSortField(e.target.value)} required>
-                <option value="" autoFocus>Select a field</option>
-                {sortableAttributes.map(attr =>
-                  <option value={attr}>{attr}</option>
-                )}
-              </select>
-              <button type='submit'>Sort</button>
-            </form>
-            <Table grants={sortedGrants} attributes={attributes} />
+            <Table grants={queriedGrants} attributes={attributes} />
       </main>
     </div>
   );

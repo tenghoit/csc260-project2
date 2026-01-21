@@ -47,18 +47,32 @@ main{
 form{
   background-color: lightgray;
   border-radius: 1rem;
-
   display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
+  flex-flow: column wrap;
+  align-items: center;
 }
 
-form > *{
-  margin: 1rem;
+fieldset{
+  display: flex;
+  flex-flow: row wrap;
+  border: none;
+  justify-content: space-evenly;
+}
+
+fieldset > * {
+  margin: 0.5rem;
 }
 
 button{
-    background-color: green;
     color: white;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
+    font-size: large;
+}
+
+.submit{
+  background-color: green;
+}
+
+.reset{
+  background-color: red;
 }
