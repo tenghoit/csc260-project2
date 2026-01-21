@@ -19,7 +19,8 @@ function App() {
     "InstCity",
     "Institution",
     "ProjectTitle",
-    "ApprovedMatching",
+    "AwardOutright",
+    "AwardMatching",
     "BeginGrant",
     "EndGrant"
   ];
