@@ -66,9 +66,10 @@ fieldset > * {
 button{
     color: white;
     border-radius: 0.5rem;
-    font-size: large;
 }
-
+label, button{
+  font-size: large;
+}
 .submit{
   background-color: green;
 }
